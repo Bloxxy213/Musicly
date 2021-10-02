@@ -180,7 +180,8 @@ async function skip(message,guildQueue,Args){
   if(!guildQueue.songs) return message.reply({content:"The bot isn't in a voice channel."})
   if(guildQueue.songs.length < 2) return message.reply({content:"There should be at least one music in the queue and one playing."})
 
-  PlaySong(message,guildQueue.songs[1],guildQueue)
+  guildQueue.songs.shift()
+  PlaySong(message,guildQueue.songs[0],guildQueue)
 }
 
 async function repeat(message,guildQueue,Args){
