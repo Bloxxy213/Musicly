@@ -7,3 +7,11 @@ Also has a cusomizable web UI (default port 9871)
 To install everything type:
 
 npm install @discordjs/opus @discordjs/voice discord.js dotenv express ffmpeg-static fs libsodium-wrappers prism-media youtube-search ytdl-core
+
+commands:
+
+join
+leave
+play
+vote
+skip
