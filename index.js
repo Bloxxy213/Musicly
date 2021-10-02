@@ -43,14 +43,14 @@ function convertHMS(value) {
   return hours+':'+minutes+':'+seconds;
 }
 
-async function PlaySong(message,Link,guildQueue) {
+async function PlaySong(message,Link,guildQueue,shouldMessage) {
   if(!guildQueue) return 
 
   const info = await ytdlCore.getInfo(Link)
-  const thumbnailsSize = info.videoDetails.thumbnails.length - 1
-
-  message.channel.send({content: "Playing " + info.videoDetails.title + " with a duration of " + convertHMS(info.videoDetails.lengthSeconds) + " seconds.",files: [info.videoDetails.thumbnails[thumbnailsSize].url]})
-
+  if(shouldMessage){
+    const thumbnailsSize = info.videoDetails.thumbnails.length - 1
+    message.channel.send({content: "Playing " + info.videoDetails.title + " with a duration of " + convertHMS(info.videoDetails.lengthSeconds) + " seconds.",files: [info.videoDetails.thumbnails[thumbnailsSize].url]})
+  }
   const stream = ytdlCore(Link, { filter: 'audioonly',highWaterMark: 1<<25,"quality": "highestaudio"});
   
   const resource = createAudioResource(stream);
@@ -73,7 +73,7 @@ async function vote(message,guildQueue,Args) {
   guildQueue.songs.push(song.link)
 
   if (guildQueue.songs.length == 1){
-    PlaySong(message,song.link,guildQueue)
+    PlaySong(message,song.link,guildQueue,true)
   } else {
     message.reply("Your selected song is now #" + guildQueue.songs.length + " in our queue.")
   }
@@ -122,7 +122,7 @@ async function play(message,guildQueue,Args) {
   if (isYoutubeUrl){
     guildQueue.songs.push(Args[0])
     if (guildQueue.songs.length == 1){
-      PlaySong(message,Args[0],guildQueue)
+      PlaySong(message,Args[0],guildQueue,true)
     }
   } else {
     var msg = message.content.split(" ")
@@ -144,7 +144,7 @@ async function HandleEnding(message,guildQueue,player){
             guildQueue.songs.shift()
           }
           if (guildQueue.songs[0]){
-            PlaySong(message,guildQueue.songs[0],guildQueue)
+            PlaySong(message,guildQueue.songs[0],guildQueue,false)
           }
       }
     }
@@ -181,7 +181,7 @@ async function skip(message,guildQueue,Args){
   if(guildQueue.songs.length < 2) return message.reply({content:"There should be at least one music in the queue and one playing."})
 
   guildQueue.songs.shift()
-  PlaySong(message,guildQueue.songs[0],guildQueue)
+  PlaySong(message,guildQueue.songs[0],guildQueue,true)
 }
 
 async function repeat(message,guildQueue,Args){
